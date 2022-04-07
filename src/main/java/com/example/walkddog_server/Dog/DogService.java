@@ -29,4 +29,18 @@ public class DogService {
                 rs.getString("dog_owner")
         ));
     }
+
+    public List<Dog> getDogsByOwner(String owner) {
+        return jdbcTemplate.query("select * from dog where dog_owner = ?", (rs, rowNum) -> new Dog(
+                rs.getInt("dog_id"),
+                rs.getString("dog_name"),
+                rs.getInt("dog_age"),
+                rs.getString("dog_owner")
+        ), owner);
+    }
+
+    public int insertDog(Dog dog) {
+        return jdbcTemplate.update("insert into dog (dog_name, dog_age, dog_owner) values (?, ?, ?)",
+                dog.getName(), dog.getAge(), dog.getOwner());
+    }
 }

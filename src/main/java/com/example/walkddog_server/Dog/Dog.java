@@ -18,6 +18,12 @@ class Dog {
         this.owner = owner;
     }
 
+    public Dog(String name, int age, String owner) {
+        this.name = name;
+        this.age = age;
+        this.owner = owner;
+    }
+
     public void testMethod() {//TODO delete this method - it is just for testing
         System.out.println("testMethod");
     }
