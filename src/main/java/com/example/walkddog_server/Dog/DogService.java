@@ -43,4 +43,9 @@ public class DogService {
         return jdbcTemplate.update("insert into dog (dog_name, dog_age, dog_owner) values (?, ?, ?)",
                 dog.getName(), dog.getAge(), dog.getOwner());
     }
+
+    public int deleteDog(Dog dog) {
+        return jdbcTemplate.update("delete from dog where dog_name = ? and dog_age = ? and dog_owner = ?",
+                dog.getName(), dog.getAge(), dog.getOwner());
+    }
 }

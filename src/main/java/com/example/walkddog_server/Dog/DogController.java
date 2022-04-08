@@ -39,8 +39,13 @@ public class DogController {
     @PostMapping("/add")
     public void addDog(@RequestBody String dogJson) {
         Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
-        System.out.println(dogMap);
 //        dogService.insertDog(dog);
+    }
+
+    @PostMapping("delete")
+    public void deleteDog(@RequestBody String dogJson) {
+        Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
+//        dogService.deleteDog(dogMap);
     }
 
 }
