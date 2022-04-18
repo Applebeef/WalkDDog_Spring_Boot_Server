@@ -44,4 +44,7 @@ public class UserService {
     }
 
 
+    public boolean loginUser(String username, String pass) {
+        return getUser(username).getPassword().equals(pass);
+    }
 }
