@@ -44,8 +44,7 @@ public class DogService {
                 dog.getName(), dog.getAge(), dog.getOwner());
     }
 
-    public int deleteDog(Dog dog) {
-        return jdbcTemplate.update("delete from dog where dog_name = ? and dog_age = ? and dog_owner = ?",
-                dog.getName(), dog.getAge(), dog.getOwner());
+    public int deleteDog(long dog_id) {
+        return jdbcTemplate.update("delete from dog where dog_id = ? ", dog_id);
     }
 }

@@ -23,9 +23,4 @@ class Dog {
         this.age = age;
         this.owner = owner;
     }
-
-    public void testMethod() {//TODO delete this method - it is just for testing
-        System.out.println("testMethod");
-    }
-
 }

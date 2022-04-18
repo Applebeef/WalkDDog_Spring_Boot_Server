@@ -33,4 +33,15 @@ public class UserService {
                 rs.getString("first_name"),
                 rs.getString("last_name")), username).get(0);
     }
+
+    public int registerUser(User user) {
+        return jdbcTemplate.update("insert into user (username, password, email, first_name, last_name) values (?, ?, ?, ?, ?)",
+                user.getUsername(), user.getPassword(), user.getEmail(), user.getFirst_name(), user.getLast_name());
+    }
+
+    public int deleteUser(String username) {
+        return jdbcTemplate.update("delete from user where username = ?", username);
+    }
+
+
 }

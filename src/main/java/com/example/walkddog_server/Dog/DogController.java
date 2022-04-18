@@ -37,15 +37,27 @@ public class DogController {
     }
 
     @PostMapping("/add")
-    public void addDog(@RequestBody String dogJson) {
-        Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
-//        dogService.insertDog(dog);
+    public boolean addDog(@RequestBody String dogJson) {
+        try {
+            Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
+            Dog dog = new Dog(dogMap.get("name").toString(), Integer.parseInt(dogMap.get("age").toString()), dogMap.get("owner").toString());
+            int res = dogService.insertDog(dog);
+            return res == 1;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @PostMapping("delete")
-    public void deleteDog(@RequestBody String dogJson) {
-        Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
-//        dogService.deleteDog(dogMap);
+    public boolean deleteDog(@RequestBody String dogJson) {
+        //TODO need to send dog_id in the body to delete
+        try {
+            Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
+            int res = dogService.deleteDog(Long.parseLong(dogMap.get("id").toString()));
+            return res == 1;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
