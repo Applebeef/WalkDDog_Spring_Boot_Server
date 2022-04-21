@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ParkService {
@@ -17,11 +20,24 @@ public class ParkService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<ParkVisitor> getAllParkVisitors(String park_id) {
-        return jdbcTemplate.query("SELECT * FROM park_visitor WHERE park_id = '" + park_id + "'", (rs, rowNum) -> new ParkVisitor(
+    public Map<String,List<String>> getAllParkVisitors(String park_id) {
+        List<ParkVisitor> list = jdbcTemplate.query("SELECT PV.*, D.dog_name FROM park_visitor PV, dog D WHERE park_id = '" + park_id + "'" + "AND D.dog_id = PV.dog_id", (rs, rowNum) -> new ParkVisitor(
                 rs.getString("park_id"),
                 rs.getString("visitor_name"),
-                rs.getString("dog_id")));
+                rs.getString("dog_id"),
+                rs.getString("dog_name")));
+        return createOwnerToDogsMap(list);
+    }
+
+    private Map<String, List<String>> createOwnerToDogsMap(List<ParkVisitor> list) {
+        Map<String, List<String>> ownerToDogsMap = new HashMap<>();
+        for (ParkVisitor pv : list) {
+            if (!ownerToDogsMap.containsKey(pv.getVisitor_name())) {
+                ownerToDogsMap.put(pv.getVisitor_name(), new ArrayList<>());
+            }
+            ownerToDogsMap.get(pv.getVisitor_name()).add(pv.getDog_name());
+        }
+        return ownerToDogsMap;
     }
 
     public void insertParkVisitor(ParkVisitor parkVisitor) {

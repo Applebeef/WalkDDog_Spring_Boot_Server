@@ -25,7 +25,7 @@ public class ParkController {
     }
 
     @GetMapping("/get/{id}")
-    public List<ParkVisitor> getAllParkVisitors(@PathVariable String id) {
+    public Map<String,List<String>> getAllParkVisitors(@PathVariable String id) {
         return parkService.getAllParkVisitors(id);
     }
 
