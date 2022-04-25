@@ -30,7 +30,7 @@ public class UserController {
 
     @GetMapping("/byusername/{username}")
     public User getUser(@PathVariable String username) {
-        return userService.getUser(username);
+        return userService.getUser(username).whereDogs(dogService.getDogsByOwner(username));
     }
 
     @PostMapping("/register")
