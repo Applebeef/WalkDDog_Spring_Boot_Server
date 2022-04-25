@@ -40,7 +40,8 @@ public class DogController {
     public boolean addDog(@RequestBody String dogJson) {
         try {
             Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
-            Dog dog = new Dog(dogMap.get("name").toString(), Integer.parseInt(dogMap.get("age").toString()), dogMap.get("owner").toString());
+            Dog dog = new Dog(dogMap.get("name").toString(), Integer.parseInt(dogMap.get("age").toString()),
+                    dogMap.get("gender").toString(), dogMap.get("owner").toString());
             int res = dogService.insertDog(dog);
             return res == 1;
         } catch (Exception e) {

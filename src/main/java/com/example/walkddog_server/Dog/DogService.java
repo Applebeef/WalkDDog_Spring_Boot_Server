@@ -40,8 +40,8 @@ public class DogService {
     }
 
     public int insertDog(Dog dog) {
-        return jdbcTemplate.update("insert into dog (dog_name, dog_age, dog_owner) values (?, ?, ?)",
-                dog.getName(), dog.getAge(), dog.getOwner());
+        return jdbcTemplate.update("insert into dog (dog_name, dog_age, dog_gender, dog_owner) values (?, ?, ?, ?)",
+                dog.getName(), dog.getAge(), dog.getGender(), dog.getOwner());
     }
 
     public int deleteDog(long dog_id) {

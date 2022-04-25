@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.RequestDispatcher;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -41,14 +39,14 @@ public class UserController {
         try {
             Map<String, Object> userMap = JsonParserFactory.getJsonParser().parseMap(userDetails);
             //TODO tell Amit to regex email
-            User user = new User(userMap.get("username").toString(), userMap.get("password").toString(),
+            final User user = new User(userMap.get("username").toString(), userMap.get("password").toString(),
                     userMap.get("email").toString(), userMap.get("first_name").toString(),
                     userMap.get("last_name").toString());
             int res = userService.registerUser(user);
             List<Map<String, Object>> list = (ArrayList) userMap.get("dogs");
             list.forEach(dogMap -> {
                 Dog dog = new Dog(dogMap.get("name").toString(), Integer.parseInt(dogMap.get("age").toString()),
-                        dogMap.get("owner").toString());
+                        dogMap.get("gender").toString(), user.getUsername());
                 dogService.insertDog(dog);
             });
             return res == 1;
