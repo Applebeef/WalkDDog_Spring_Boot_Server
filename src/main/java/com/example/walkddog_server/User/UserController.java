@@ -3,12 +3,14 @@ package com.example.walkddog_server.User;
 import com.example.walkddog_server.Dog.Dog;
 import com.example.walkddog_server.Dog.DogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("user")
@@ -34,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public boolean registerUser(@RequestBody String userDetails) {
+    public List<Integer> registerUser(@RequestBody String userDetails) {
         //TODO add exception for existing username
         try {
             Map<String, Object> userMap = JsonParserFactory.getJsonParser().parseMap(userDetails);
@@ -44,18 +46,17 @@ public class UserController {
                     userMap.get("last_name").toString());
             int res = userService.registerUser(user);
             List<Map<String, Object>> list = (ArrayList) userMap.get("dogs");
-            list.forEach(dogMap -> {
-                Dog dog = new Dog(dogMap.get("name").toString(), Integer.parseInt(dogMap.get("age").toString()),
-                        dogMap.get("gender").toString(), user.getUsername());
-                dogService.insertDog(dog);
-            });
-            return res == 1;
+            return list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
+                            Integer.parseInt(dogMap.get("age").toString()),
+                            dogMap.get("gender").toString(),
+                            user.getUsername()))
+                    .map(dogService::insertDog).collect(Collectors.toList());
         } catch (Exception e) {
             for (StackTraceElement element : e.getStackTrace()) {
                 System.out.println(element.toString());
             }
             System.out.println(e.getMessage());
-            return false;
+            return null;
         }
     }
 

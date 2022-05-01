@@ -5,7 +5,9 @@ import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.annotation.MultipartConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +39,14 @@ public class DogController {
     }
 
     @PostMapping("/add")
-    public boolean addDog(@RequestBody String dogJson) {
+    public int addDog(@RequestBody String dogJson) {
         try {
             Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
             Dog dog = new Dog(dogMap.get("name").toString(), Integer.parseInt(dogMap.get("age").toString()),
                     dogMap.get("gender").toString(), dogMap.get("owner").toString());
-            int res = dogService.insertDog(dog);
-            return res == 1;
+            return dogService.insertDog(dog);
         } catch (Exception e) {
-            return false;
+            return 0;
         }
     }
 
@@ -56,6 +57,26 @@ public class DogController {
             Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
             int res = dogService.deleteDog(Long.parseLong(dogMap.get("id").toString()));
             return res == 1;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @PostMapping("uploadimage")
+    public boolean uploadImage(@RequestParam("image") MultipartFile file, @RequestParam("dog_id") String dogId) {
+        System.out.println("here");
+        try {
+            dogService.uploadImage(file, Long.parseLong(dogId));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @GetMapping("deleteimage/{dog_id}")
+    public boolean deleteImage(@PathVariable("dog_id") String dogId) {
+        try {
+            return dogService.deleteImage(Long.parseLong(dogId));
         } catch (Exception e) {
             return false;
         }
