@@ -2,9 +2,14 @@ package com.example.walkddog_server.User;
 
 import com.example.walkddog_server.Dog.Dog;
 import com.example.walkddog_server.Dog.DogService;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -44,13 +49,15 @@ public class UserController {
             final User user = new User(userMap.get("username").toString(), userMap.get("password").toString(),
                     userMap.get("email").toString(), userMap.get("first_name").toString(),
                     userMap.get("last_name").toString());
-            int res = userService.registerUser(user);
+            userService.registerUser(user);
             List<Map<String, Object>> list = (ArrayList) userMap.get("dogs");
-            return list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
+            List<Integer> id_list = list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
                             Integer.parseInt(dogMap.get("age").toString()),
                             dogMap.get("gender").toString(),
                             user.getUsername()))
                     .map(dogService::insertDog).collect(Collectors.toList());
+
+            return id_list;
         } catch (Exception e) {
             for (StackTraceElement element : e.getStackTrace()) {
                 System.out.println(element.toString());
