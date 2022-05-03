@@ -27,7 +27,7 @@ public class DogService {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcDogInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("dog")
                 .usingColumns("dog_name", "dog_age", "dog_gender", "dog_owner").usingGeneratedKeyColumns("dog_id");
-        this.uploadPath = Paths.get("C:\\DogPics");
+        this.uploadPath = Paths.get("C:\\Spring Boot Server\\DogPics");
     }
 
     public List<Dog> getAllDogs() {
@@ -58,6 +58,7 @@ public class DogService {
     }
 
     public int deleteDog(long dog_id) {
+        deleteImage(dog_id);
         return jdbcTemplate.update("delete from dog where dog_id = ? ", dog_id);
     }
 
@@ -73,10 +74,10 @@ public class DogService {
         }
     }
 
-    public boolean deleteImage(long parseLong) {
+    public boolean deleteImage(long id) {
         String[] extensions = {"jpg", "png", "jpeg"};
         for (String extension : extensions) {
-            File file = uploadPath.resolve(parseLong + "." + extension).toFile();
+            File file = uploadPath.resolve(id + "." + extension).toFile();
             if (file.exists()) {
                 return file.delete();
             }

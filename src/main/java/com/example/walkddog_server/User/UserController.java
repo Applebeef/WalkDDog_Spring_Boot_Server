@@ -40,6 +40,11 @@ public class UserController {
         return userService.getUser(username).whereDogs(dogService.getDogsByOwner(username));
     }
 
+    @GetMapping("/validate/{username}")
+    public boolean validateUser(@PathVariable String username) {
+        return userService.validateUser(username);
+    }
+
     @PostMapping("/register")
     public List<Integer> registerUser(@RequestBody String userDetails) {
         //TODO add exception for existing username
@@ -63,7 +68,7 @@ public class UserController {
                 System.out.println(element.toString());
             }
             System.out.println(e.getMessage());
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -72,6 +77,10 @@ public class UserController {
         try {
             Map<String, Object> userMap = JsonParserFactory.getJsonParser().parseMap(username);
             String user = userMap.get("username").toString();
+            List<Dog> dogs = dogService.getDogsByOwner(user);
+            for (Dog dog : dogs) {
+                dogService.deleteDog(dog.getId());
+            }
             int res = userService.deleteUser(user);
             return res == 1;
         } catch (Exception e) {

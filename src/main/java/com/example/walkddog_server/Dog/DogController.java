@@ -64,7 +64,6 @@ public class DogController {
 
     @PostMapping("uploadimage")
     public boolean uploadImage(@RequestParam("image") MultipartFile file, @RequestParam("dog_id") String dogId) {
-        System.out.println("here");
         try {
             dogService.uploadImage(file, Long.parseLong(dogId));
             return true;

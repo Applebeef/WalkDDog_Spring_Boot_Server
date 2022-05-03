@@ -47,4 +47,9 @@ public class UserService {
     public boolean loginUser(String username, String pass) {
         return getUser(username).getPassword().equals(pass);
     }
+
+    public boolean validateUser(String username) {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from user where username = ?", Integer.class, username);
+        return count != null && count.equals(0);
+    }
 }
