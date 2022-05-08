@@ -1,14 +1,11 @@
 package com.example.walkddog_server.Dog;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.resource.HttpResource;
 
-import javax.servlet.annotation.MultipartConfig;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

@@ -1,11 +1,15 @@
 package com.example.walkddog_server.Dog;
 
+import com.example.walkddog_server.Config.Constants;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.resource.HttpResource;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +31,7 @@ public class DogService {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcDogInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("dog")
                 .usingColumns("dog_name", "dog_age", "dog_gender", "dog_owner").usingGeneratedKeyColumns("dog_id");
-        this.uploadPath = Paths.get("C:\\Spring Boot Server\\DogPics");
+        this.uploadPath = Paths.get(Constants.uploadPath);
     }
 
     public List<Dog> getAllDogs() {
@@ -63,6 +67,9 @@ public class DogService {
     }
 
     public void uploadImage(MultipartFile file, long dog_id) throws IOException {
+        if (!uploadPath.toFile().exists()) {
+            uploadPath.toFile().mkdirs();
+        }
         if (!file.isEmpty()) {
             String[] list = file.getOriginalFilename().split("\\.");
             String extension = list[list.length - 1];
@@ -75,13 +82,27 @@ public class DogService {
     }
 
     public boolean deleteImage(long id) {
+        File file = findFile(id);
+        if (file != null) {
+            return file.delete();
+        } else
+            return false;
+    }
+
+    public File findFile(long id) {
         String[] extensions = {"jpg", "png", "jpeg"};
+        String defaultFileName = "default.jpg";
         for (String extension : extensions) {
             File file = uploadPath.resolve(id + "." + extension).toFile();
             if (file.exists()) {
-                return file.delete();
+                return file;
             }
         }
-        return false;
+        return uploadPath.resolve(defaultFileName).toFile();
     }
+
+    public File findFile(String id) {
+        return findFile(Long.parseLong(id));
+    }
+
 }

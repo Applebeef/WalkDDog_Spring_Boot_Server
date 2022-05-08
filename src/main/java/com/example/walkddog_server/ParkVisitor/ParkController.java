@@ -1,5 +1,6 @@
 package com.example.walkddog_server.ParkVisitor;
 
+import com.example.walkddog_server.Dog.SimpleDogInfo;
 import com.example.walkddog_server.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParserFactory;
@@ -25,7 +26,7 @@ public class ParkController {
     }
 
     @GetMapping("/get/{id}")
-    public Map<String,List<String>> getAllParkVisitors(@PathVariable String id) {
+    public Map<String, List<SimpleDogInfo>> getAllParkVisitors(@PathVariable String id) {
         return parkService.getAllParkVisitors(id);
     }
 
@@ -40,5 +41,10 @@ public class ParkController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @PostMapping("/remove/{name}")
+    public int removeParkVisitor(@PathVariable String name) {
+        return parkService.removeParkVisitor(name);
     }
 }

@@ -1,5 +1,8 @@
 package com.example.walkddog_server.ParkVisitor;
 
+import com.example.walkddog_server.Dog.Dog;
+import com.example.walkddog_server.Dog.DogService;
+import com.example.walkddog_server.Dog.SimpleDogInfo;
 import com.example.walkddog_server.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,13 +17,15 @@ import java.util.Map;
 public class ParkService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final DogService dogService;
 
     @Autowired
-    public ParkService(JdbcTemplate jdbcTemplate) {
+    public ParkService(JdbcTemplate jdbcTemplate, DogService dogService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.dogService = dogService;
     }
 
-    public Map<String,List<String>> getAllParkVisitors(String park_id) {
+    public Map<String, List<SimpleDogInfo>> getAllParkVisitors(String park_id) {
         List<ParkVisitor> list = jdbcTemplate.query("SELECT PV.*, D.dog_name FROM park_visitor PV, dog D WHERE park_id = '" + park_id + "'" + "AND D.dog_id = PV.dog_id", (rs, rowNum) -> new ParkVisitor(
                 rs.getString("park_id"),
                 rs.getString("visitor_name"),
@@ -29,13 +34,14 @@ public class ParkService {
         return createOwnerToDogsMap(list);
     }
 
-    private Map<String, List<String>> createOwnerToDogsMap(List<ParkVisitor> list) {
-        Map<String, List<String>> ownerToDogsMap = new HashMap<>();
-        for (ParkVisitor pv : list) {
-            if (!ownerToDogsMap.containsKey(pv.getVisitor_name())) {
-                ownerToDogsMap.put(pv.getVisitor_name(), new ArrayList<>());
+    private Map<String, List<SimpleDogInfo>> createOwnerToDogsMap(List<ParkVisitor> list) {
+        Map<String, List<SimpleDogInfo>> ownerToDogsMap = new HashMap<>();
+        for (ParkVisitor parkVisitor : list) {
+            if (!ownerToDogsMap.containsKey(parkVisitor.getVisitor_name())) {
+                ownerToDogsMap.put(parkVisitor.getVisitor_name(), new ArrayList<>());
             }
-            ownerToDogsMap.get(pv.getVisitor_name()).add(pv.getDog_name());
+            SimpleDogInfo info = new SimpleDogInfo(parkVisitor.getDog_name(), parkVisitor.getDog_id(), dogService);
+            ownerToDogsMap.get(parkVisitor.getVisitor_name()).add(info);
         }
         return ownerToDogsMap;
     }
@@ -58,5 +64,9 @@ public class ParkService {
     public int addParkVisitor(ParkVisitor pv) {
         return jdbcTemplate.update("INSERT INTO park_visitor (park_id, visitor_name, dog_id) VALUES (?, ?, ?)",
                 pv.getPark_id(), pv.getVisitor_name(), pv.getDog_id());
+    }
+
+    public int removeParkVisitor(String name) {
+        return jdbcTemplate.update("DELETE FROM park_visitor WHERE visitor_name = ?", name);
     }
 }

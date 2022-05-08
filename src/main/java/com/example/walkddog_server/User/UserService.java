@@ -2,6 +2,7 @@ package com.example.walkddog_server.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 public class UserService {
 
     private final JdbcTemplate jdbcTemplate;
+
 
     @Autowired
     public UserService(JdbcTemplate jdbcTemplate) {
