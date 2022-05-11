@@ -2,14 +2,8 @@ package com.example.walkddog_server.User;
 
 import com.example.walkddog_server.Dog.Dog;
 import com.example.walkddog_server.Dog.DogService;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.GsonJsonParser;
-import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;

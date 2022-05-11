@@ -1,9 +1,7 @@
 package com.example.walkddog_server.ParkVisitor;
 
-import com.example.walkddog_server.Dog.Dog;
 import com.example.walkddog_server.Dog.DogService;
 import com.example.walkddog_server.Dog.SimpleDogInfo;
-import com.example.walkddog_server.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

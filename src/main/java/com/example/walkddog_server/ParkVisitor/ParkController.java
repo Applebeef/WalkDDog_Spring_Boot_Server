@@ -1,7 +1,6 @@
 package com.example.walkddog_server.ParkVisitor;
 
 import com.example.walkddog_server.Dog.SimpleDogInfo;
-import com.example.walkddog_server.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.web.bind.annotation.*;

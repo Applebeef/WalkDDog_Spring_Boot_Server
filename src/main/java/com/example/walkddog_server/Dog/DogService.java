@@ -1,7 +1,6 @@
 package com.example.walkddog_server.Dog;
 
 import com.example.walkddog_server.Config.Constants;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,8 +8,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.resource.HttpResource;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import java.io.File;
 import java.io.IOException;
