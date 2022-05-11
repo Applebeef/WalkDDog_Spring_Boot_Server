@@ -32,7 +32,9 @@ public class UserController {
 
     @GetMapping("/all")
     public List<User> getAllUsers() {
-        return userService.getAllUsers();
+        List<User> users = userService.getAllUsers();
+        users.forEach(user -> user.whereDogs(dogService.getDogsByOwner(user.getUsername())));
+        return users;
     }
 
     @GetMapping("/byusername/{username}")
@@ -56,13 +58,11 @@ public class UserController {
                     userMap.get("last_name").toString());
             userService.registerUser(user);
             List<Map<String, Object>> list = (ArrayList) userMap.get("dogs");
-            List<Integer> id_list = list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
+            return list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
                             Integer.parseInt(dogMap.get("age").toString()),
                             dogMap.get("gender").toString(),
                             user.getUsername()))
                     .map(dogService::insertDog).collect(Collectors.toList());
-
-            return id_list;
         } catch (Exception e) {
             for (StackTraceElement element : e.getStackTrace()) {
                 System.out.println(element.toString());

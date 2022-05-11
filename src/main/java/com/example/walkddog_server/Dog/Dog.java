@@ -12,10 +12,11 @@ class Dog {
     private String gender;
     private String owner;
 
-    public Dog(int id, String name, int age, String owner) {
+    public Dog(int id, String name, int age, String gender, String owner) {
         this.id = id;
         this.name = name;
         this.age = age;
+        this.gender = gender;
         this.owner = owner;
     }
 

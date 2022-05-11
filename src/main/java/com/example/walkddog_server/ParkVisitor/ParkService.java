@@ -6,8 +6,11 @@ import com.example.walkddog_server.Dog.SimpleDogInfo;
 import com.example.walkddog_server.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +22,16 @@ public class ParkService {
     private final JdbcTemplate jdbcTemplate;
     private final DogService dogService;
 
+    private static class ParkVisitorRowMapper implements RowMapper<ParkVisitor> {
+        @Override
+        public ParkVisitor mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new ParkVisitor(rs.getString("park_id"),
+                    rs.getString("visitor_name"),
+                    rs.getString("dog_id"),
+                    rs.getString("dog_name"));
+        }
+    }
+
     @Autowired
     public ParkService(JdbcTemplate jdbcTemplate, DogService dogService) {
         this.jdbcTemplate = jdbcTemplate;
@@ -26,14 +39,12 @@ public class ParkService {
     }
 
     public Map<String, List<SimpleDogInfo>> getAllParkVisitors(String park_id) {
-        List<ParkVisitor> list = jdbcTemplate.query("SELECT PV.*, D.dog_name FROM park_visitor PV, dog D WHERE park_id = '" + park_id + "'" + "AND D.dog_id = PV.dog_id", (rs, rowNum) -> new ParkVisitor(
-                rs.getString("park_id"),
-                rs.getString("visitor_name"),
-                rs.getString("dog_id"),
-                rs.getString("dog_name")));
+        final String sql = "SELECT PV.*, D.dog_name FROM park_visitor PV, dog D WHERE park_id = ? AND D.dog_id = PV.dog_id";
+        List<ParkVisitor> list = jdbcTemplate.query(sql, new ParkVisitorRowMapper(), park_id);
         return createOwnerToDogsMap(list);
     }
 
+    //TODO move this function to the frontend
     private Map<String, List<SimpleDogInfo>> createOwnerToDogsMap(List<ParkVisitor> list) {
         Map<String, List<SimpleDogInfo>> ownerToDogsMap = new HashMap<>();
         for (ParkVisitor parkVisitor : list) {

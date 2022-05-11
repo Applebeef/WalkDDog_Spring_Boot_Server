@@ -4,6 +4,7 @@ import com.example.walkddog_server.Config.Constants;
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -24,6 +27,17 @@ public class DogService {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcDogInsert;
     private final Path uploadPath;
+
+    private static class DogRowMapper implements RowMapper<Dog> {
+        @Override
+        public Dog mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new Dog(rs.getInt("dog_id"),
+                    rs.getString("dog_name"),
+                    rs.getInt("dog_age"),
+                    rs.getString("dog_gender"),
+                    rs.getString("dog_owner"));
+        }
+    }
 
 
     @Autowired
@@ -35,21 +49,11 @@ public class DogService {
     }
 
     public List<Dog> getAllDogs() {
-        return jdbcTemplate.query("select * from dog", (rs, rowNum) -> new Dog(
-                rs.getInt("dog_id"),
-                rs.getString("dog_name"),
-                rs.getInt("dog_age"),
-                rs.getString("dog_owner")
-        ));
+        return jdbcTemplate.query("select * from dog", new DogRowMapper());
     }
 
     public List<Dog> getDogsByOwner(String owner) {
-        return jdbcTemplate.query("select * from dog where dog_owner = ?", (rs, rowNum) -> new Dog(
-                rs.getInt("dog_id"),
-                rs.getString("dog_name"),
-                rs.getInt("dog_age"),
-                rs.getString("dog_owner")
-        ), owner);
+        return jdbcTemplate.query("select * from dog where dog_owner = ?", new DogRowMapper(), owner);
     }
 
 
