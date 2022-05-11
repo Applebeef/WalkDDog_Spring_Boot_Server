@@ -1,6 +1,5 @@
 package com.example.walkddog_server.Config.Filters;
 
-import com.sun.deploy.net.HttpResponse;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
