@@ -53,9 +53,9 @@ public class UserController {
             userService.registerUser(user);
             List<Map<String, Object>> list = (ArrayList) userMap.get("dogs");
             return list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
-                            Integer.parseInt(dogMap.get("age").toString()),
-                            dogMap.get("gender").toString(),
-                            user.getUsername()))
+                    Integer.parseInt(dogMap.get("age").toString()),
+                    dogMap.get("gender").toString(),
+                    user.getUsername()))
                     .map(dogService::insertDog).collect(Collectors.toList());
         } catch (Exception e) {
             for (StackTraceElement element : e.getStackTrace()) {
@@ -92,6 +92,16 @@ public class UserController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @GetMapping("/friends/{username}")
+    public List<String> getFriends(@PathVariable String username) {
+        return userService.getFriends(username);
+    }
+
+    @PostMapping("/friends/{sender}/{receiver}")
+    public boolean addFriendRequest(@PathVariable String sender, @PathVariable String receiver) {
+        return userService.addFriendRequest(sender, receiver);
     }
 
 }
