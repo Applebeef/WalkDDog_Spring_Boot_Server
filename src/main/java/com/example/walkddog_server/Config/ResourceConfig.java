@@ -13,5 +13,7 @@ public class ResourceConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/dogimg/**")
                 .addResourceLocations(Constants.fileSystemPath);
+        registry.addResourceHandler("/**")
+                .addResourceLocations(Constants.staticPath);
     }
 }
