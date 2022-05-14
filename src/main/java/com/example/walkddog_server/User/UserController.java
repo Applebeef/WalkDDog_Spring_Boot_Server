@@ -25,15 +25,15 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public List<User> getAllUsers() {
+    public List<SimpleUserInfo> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        users.forEach(user -> user.whereDogs(dogService.getDogsByOwner(user.getUsername())));
-        return users;
+        return users.stream().map(user -> new SimpleUserInfo(user)
+                .whereDogs(dogService.getDogsByOwner(user.getUsername()))).collect(Collectors.toList());
     }
 
     @GetMapping("/byusername/{username}")
-    public User getUser(@PathVariable String username) {
-        return userService.getUser(username).whereDogs(dogService.getDogsByOwner(username));
+    public SimpleUserInfo getUser(@PathVariable String username) {
+        return userService.getSimpleUserInfo(username).whereDogs(dogService.getDogsByOwner(username));
     }
 
     @GetMapping("/validate/{username}")
@@ -53,9 +53,9 @@ public class UserController {
             userService.registerUser(user);
             List<Map<String, Object>> list = (ArrayList) userMap.get("dogs");
             return list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
-                    Integer.parseInt(dogMap.get("age").toString()),
-                    dogMap.get("gender").toString(),
-                    user.getUsername()))
+                            Integer.parseInt(dogMap.get("age").toString()),
+                            dogMap.get("gender").toString(),
+                            user.getUsername()))
                     .map(dogService::insertDog).collect(Collectors.toList());
         } catch (Exception e) {
             for (StackTraceElement element : e.getStackTrace()) {

@@ -42,6 +42,10 @@ public class UserService {
         return jdbcTemplate.queryForObject(Sql, new UserRowMapper(), username);
     }
 
+    public SimpleUserInfo getSimpleUserInfo(String username){
+        return new SimpleUserInfo(getUser(username));
+    }
+
     public int registerUser(User user) {
         return jdbcTemplate.update("insert into user (username, password, email, first_name, last_name) values (?, ?, ?, ?, ?)",
                 user.getUsername(), user.getPassword(), user.getEmail(), user.getFirst_name(), user.getLast_name());
