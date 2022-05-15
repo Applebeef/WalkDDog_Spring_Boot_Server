@@ -26,13 +26,32 @@ public class DogService {
     private final Path uploadPath;
 
     private static class DogRowMapper implements RowMapper<Dog> {
+
+        DogService dogService;
+
+        public DogRowMapper() {
+            super();
+            dogService = null;
+        }
+
+        public DogRowMapper(DogService dogService) {
+            super();
+            this.dogService = dogService;
+        }
+
         @Override
         public Dog mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Dog(rs.getInt("dog_id"),
-                    rs.getString("dog_name"),
-                    rs.getInt("dog_age"),
-                    rs.getString("dog_gender"),
-                    rs.getString("dog_owner"));
+            int id = rs.getInt("dog_id");
+            String name = rs.getString("dog_name");
+            int age = rs.getInt("dog_age");
+            String gender = rs.getString("dog_gender");
+            String owner = rs.getString("dog_owner");
+            if (dogService != null) {
+                String filename = dogService.findFile(id).getName();
+                return new Dog(id, name, age, gender, owner, filename);
+            } else {
+                return new Dog(id, name, age, gender, owner);
+            }
         }
     }
 
@@ -46,11 +65,11 @@ public class DogService {
     }
 
     public List<Dog> getAllDogs() {
-        return jdbcTemplate.query("select * from dog", new DogRowMapper());
+        return jdbcTemplate.query("select * from dog", new DogRowMapper(this));
     }
 
     public List<Dog> getDogsByOwner(String owner) {
-        return jdbcTemplate.query("select * from dog where dog_owner = ?", new DogRowMapper(), owner);
+        return jdbcTemplate.query("select * from dog where dog_owner = ?", new DogRowMapper(this), owner);
     }
 
 
