@@ -49,7 +49,7 @@ public class UserController {
             //TODO tell Amit to regex email
             final User user = new User(userMap.get("username").toString(), userMap.get("password").toString(),
                     userMap.get("email").toString(), userMap.get("first_name").toString(),
-                    userMap.get("last_name").toString());
+                    userMap.get("last_name").toString(), userMap.get("push_token").toString());
             userService.registerUser(user);
             List<Map<String, Object>> list = (ArrayList) userMap.get("dogs");
             return list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),

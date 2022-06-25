@@ -42,13 +42,13 @@ public class UserService {
         return jdbcTemplate.queryForObject(Sql, new UserRowMapper(), username);
     }
 
-    public SimpleUserInfo getSimpleUserInfo(String username){
+    public SimpleUserInfo getSimpleUserInfo(String username) {
         return new SimpleUserInfo(getUser(username));
     }
 
     public int registerUser(User user) {
-        return jdbcTemplate.update("insert into user (username, password, email, first_name, last_name) values (?, ?, ?, ?, ?)",
-                user.getUsername(), user.getPassword(), user.getEmail(), user.getFirst_name(), user.getLast_name());
+        return jdbcTemplate.update("insert into user (username, password, email, first_name, last_name,push_token) values (?, ?, ?, ?, ?, ?)",
+                user.getUsername(), user.getPassword(), user.getEmail(), user.getFirst_name(), user.getLast_name(), user.getPush_token());
     }
 
     public int deleteUser(String username) {
@@ -82,9 +82,16 @@ public class UserService {
     public boolean addFriendRequest(String sender, String receiver) {
         final String addRequestSql = "INSERT INTO friend_request (sender, receiver) VALUES (?, ?)";
         final String checkRequestSql = "SELECT count(*) FROM friend_request WHERE sender = ? AND receiver = ?";
+        final String checkIfAlreadyFriendsSql = "SELECT count(*) FROM friend WHERE (username1 = ? AND username2 = ?) OR (username1 = ? AND username2 = ?)";
 
-        Integer count = jdbcTemplate.queryForObject(checkRequestSql, Integer.class, receiver, sender);
-        if (count == null || count.equals(0)) {
+        Integer existingRequestsSql = jdbcTemplate.queryForObject(checkRequestSql, Integer.class, receiver, sender);
+        Integer duplicateRequests = jdbcTemplate.queryForObject(checkRequestSql, Integer.class, sender, receiver);
+        Integer alreadyFriends = jdbcTemplate.queryForObject(checkIfAlreadyFriendsSql, Integer.class, sender, receiver, receiver, sender);
+        if ((alreadyFriends != null && alreadyFriends.compareTo(0) > 0) ||
+                (duplicateRequests != null && duplicateRequests.compareTo(0) > 0)) {
+            return true;
+        }
+        if (existingRequestsSql == null || existingRequestsSql.equals(0)) {
             jdbcTemplate.update(addRequestSql, sender, receiver);
             return false;
         } else {
