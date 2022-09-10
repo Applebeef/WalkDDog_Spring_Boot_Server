@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,12 +35,18 @@ public class ParkController {
     public boolean addParkVisitor(@RequestBody String jsonDetails) {
         try {
             Map<String, Object> parkVisitorMap = JsonParserFactory.getJsonParser().parseMap(jsonDetails);
-            ParkVisitor pv = new ParkVisitor(parkVisitorMap.get("park_id").toString(),
-                    parkVisitorMap.get("visitor_name").toString(),
-                    parkVisitorMap.get("dog_id").toString(),
-                    Long.parseLong(parkVisitorMap.get("hours").toString()),
-                    Long.parseLong(parkVisitorMap.get("minutes").toString()));
-            int res = parkService.addParkVisitor(pv);
+            List<Integer> dog_ids = (ArrayList) parkVisitorMap.get("dog_id");
+            long hoursMillis = Long.parseLong(parkVisitorMap.get("hours").toString()) * 60 * 60 * 1000;
+            long minutesMillis = Long.parseLong(parkVisitorMap.get("minutes").toString()) * 60 * 1000;
+            Timestamp expiration_time = new Timestamp(System.currentTimeMillis() + hoursMillis + minutesMillis);
+            int res = 1;
+            for (Integer dog_id : dog_ids) {
+                ParkVisitor pv = new ParkVisitor(parkVisitorMap.get("park_id").toString(),
+                        parkVisitorMap.get("visitor_name").toString(),
+                        Integer.toString(dog_id),
+                        expiration_time);
+                res *= parkService.addParkVisitor(pv);
+            }
             return res == 1;
         } catch (Exception e) {
             return false;
