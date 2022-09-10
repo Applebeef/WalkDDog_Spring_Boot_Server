@@ -33,8 +33,11 @@ public class ParkController {
     public boolean addParkVisitor(@RequestBody String jsonDetails) {
         try {
             Map<String, Object> parkVisitorMap = JsonParserFactory.getJsonParser().parseMap(jsonDetails);
-            ParkVisitor pv = new ParkVisitor(parkVisitorMap.get("park_id").toString(), parkVisitorMap.get("visitor_name").toString(),
-                    parkVisitorMap.get("dog_id").toString());
+            ParkVisitor pv = new ParkVisitor(parkVisitorMap.get("park_id").toString(),
+                    parkVisitorMap.get("visitor_name").toString(),
+                    parkVisitorMap.get("dog_id").toString(),
+                    Long.parseLong(parkVisitorMap.get("hours").toString()),
+                    Long.parseLong(parkVisitorMap.get("minutes").toString()));
             int res = parkService.addParkVisitor(pv);
             return res == 1;
         } catch (Exception e) {

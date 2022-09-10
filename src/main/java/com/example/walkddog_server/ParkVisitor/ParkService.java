@@ -71,8 +71,8 @@ public class ParkService {
     }
 
     public int addParkVisitor(ParkVisitor pv) {
-        return jdbcTemplate.update("INSERT INTO park_visitor (park_id, visitor_name, dog_id) VALUES (?, ?, ?)",
-                pv.getPark_id(), pv.getVisitor_name(), pv.getDog_id());
+        return jdbcTemplate.update("INSERT INTO park_visitor (park_id, visitor_name, dog_id, expiration_time) VALUES (?, ?, ?, ?)",
+                pv.getPark_id(), pv.getVisitor_name(), pv.getDog_id(), pv.getExpiration_time());
     }
 
     public int removeParkVisitor(String name) {
