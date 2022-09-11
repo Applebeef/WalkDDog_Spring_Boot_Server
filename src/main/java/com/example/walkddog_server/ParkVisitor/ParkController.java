@@ -57,4 +57,10 @@ public class ParkController {
     public int removeParkVisitor(@PathVariable String name) {
         return parkService.removeParkVisitor(name);
     }
+
+    @GetMapping("/check/{name}")
+    public boolean checkParkVisitor(@PathVariable String name) {
+        return parkService.checkIfCurrentlyInPark(name);
+    }
+
 }
