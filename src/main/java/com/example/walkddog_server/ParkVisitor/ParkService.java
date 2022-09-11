@@ -26,7 +26,8 @@ public class ParkService {
             return new ParkVisitor(rs.getString("park_id"),
                     rs.getString("visitor_name"),
                     rs.getString("dog_id"),
-                    rs.getString("expiration_time"));
+                    rs.getString("dog_name"),
+                    rs.getTimestamp("expiration_time"));
         }
     }
 
@@ -79,7 +80,7 @@ public class ParkService {
         return jdbcTemplate.update("DELETE FROM park_visitor WHERE visitor_name = ?", name);
     }
 
-    public boolean checkIfCurrentlyInPark(String username){
+    public boolean checkIfCurrentlyInPark(String username) {
         final String sql = "SELECT * FROM park_visitor WHERE visitor_name = ?";
         List<ParkVisitor> list = jdbcTemplate.query(sql, new ParkVisitorRowMapper(), username);
         return list.size() > 0;
