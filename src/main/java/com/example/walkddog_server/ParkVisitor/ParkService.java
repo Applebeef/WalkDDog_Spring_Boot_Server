@@ -20,6 +20,10 @@ public class ParkService {
     private final JdbcTemplate jdbcTemplate;
     private final DogService dogService;
 
+    public void removeExpiredParkVisitors() {
+        jdbcTemplate.update("delete from park_visitor where expiration_time < now()");
+    }
+
     private static class ParkVisitorRowMapper implements RowMapper<ParkVisitor> {
         @Override
         public ParkVisitor mapRow(ResultSet rs, int rowNum) throws SQLException {

@@ -3,8 +3,10 @@ package com.example.walkddog_server.ParkVisitor;
 import com.example.walkddog_server.Dog.SimpleDogInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParserFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +63,13 @@ public class ParkController {
     @GetMapping("/check/{name}")
     public boolean checkParkVisitor(@PathVariable String name) {
         return parkService.checkIfCurrentlyInPark(name);
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void removeExpiredParkVisitors() {
+        parkService.removeExpiredParkVisitors();
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        System.out.println("Removed expired park visitors at " + now);
     }
 
 }
