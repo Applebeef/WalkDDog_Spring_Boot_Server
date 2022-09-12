@@ -55,7 +55,7 @@ public class UserController {
             return list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
                             Integer.parseInt(dogMap.get("age").toString()),
                             dogMap.get("gender").toString(),
-                            user.getUsername()))
+                            user.getUsername(), dogMap.get("breed").toString()))
                     .map(dogService::insertDog).collect(Collectors.toList());
         } catch (Exception e) {
             for (StackTraceElement element : e.getStackTrace()) {

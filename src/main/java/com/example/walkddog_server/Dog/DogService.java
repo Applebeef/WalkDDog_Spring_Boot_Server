@@ -60,7 +60,7 @@ public class DogService {
     public DogService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcDogInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("dog")
-                .usingColumns("dog_name", "dog_age", "dog_gender", "dog_owner").usingGeneratedKeyColumns("dog_id");
+                .usingColumns("dog_name", "dog_age", "dog_gender", "dog_owner", "dog_breed").usingGeneratedKeyColumns("dog_id");
         this.uploadPath = Paths.get(Constants.uploadPath);
     }
 
@@ -78,7 +78,8 @@ public class DogService {
                 .addValue("dog_name", dog.getName())
                 .addValue("dog_age", dog.getAge())
                 .addValue("dog_gender", dog.getGender())
-                .addValue("dog_owner", dog.getOwner())).intValue();
+                .addValue("dog_owner", dog.getOwner())
+                .addValue("dog_breed", dog.getBreed())).intValue();
     }
 
     public int deleteDog(long dog_id) {

@@ -12,6 +12,7 @@ class Dog {
     private String gender;
     private String owner;
 
+    private String breed;
     private String filename;
 
     public Dog(int id, String name, int age, String gender, String owner) {
@@ -23,12 +24,13 @@ class Dog {
         this.filename = null;
     }
 
-    public Dog(String name, int age, String gender, String owner) {
+    public Dog(String name, int age, String gender, String owner, String breed) {
         this.name = name;
         this.age = age;
         this.gender = gender;
         this.owner = owner;
         this.filename = null;
+        this.breed = breed;
     }
 
     public Dog(int id, String name, int age, String gender, String owner, DogService dogService) {
