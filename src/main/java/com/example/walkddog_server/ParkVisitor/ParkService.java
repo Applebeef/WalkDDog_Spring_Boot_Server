@@ -86,7 +86,10 @@ public class ParkService {
 
     public boolean checkIfCurrentlyInPark(String username) {
         final String sql = "SELECT * FROM park_visitor WHERE visitor_name = ?";
-        List<ParkVisitor> list = jdbcTemplate.query(sql, new ParkVisitorRowMapper(), username);
-        return list.size() > 0;
+        List<ParkVisitor> list = jdbcTemplate.query(sql, (rs, rowNum) -> new ParkVisitor(rs.getString("park_id"),
+                rs.getString("visitor_name"),
+                rs.getString("dog_id"),
+                rs.getTimestamp("expiration_time")), username);
+        return !list.isEmpty();
     }
 }
