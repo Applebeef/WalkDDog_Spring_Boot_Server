@@ -49,6 +49,8 @@ public class ParkController {
                         expiration_time);
                 res *= parkService.addParkVisitor(pv);
             }
+            parkService.sendNotificationToParkVisitorFriends(parkVisitorMap.get("park_id").toString(),
+                    parkVisitorMap.get("visitor_name").toString());
             return res == 1;
         } catch (Exception e) {
             return false;

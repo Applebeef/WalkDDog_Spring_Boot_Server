@@ -2,6 +2,7 @@ package com.example.walkddog_server.ParkVisitor;
 
 import com.example.walkddog_server.Dog.DogService;
 import com.example.walkddog_server.Dog.SimpleDogInfo;
+import com.example.walkddog_server.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,12 +14,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import io.github.jav.exposerversdk.ExpoPushMessage;
+import io.github.jav.exposerversdk.ExpoPushMessageTicketPair;
+import io.github.jav.exposerversdk.ExpoPushReceipt;
+import io.github.jav.exposerversdk.ExpoPushTicket;
+import io.github.jav.exposerversdk.PushClient;
+import io.github.jav.exposerversdk.PushClientException;
 
 @Service
 public class ParkService {
 
     private final JdbcTemplate jdbcTemplate;
     private final DogService dogService;
+    private final UserService userService;
 
     public void removeExpiredParkVisitors() {
         jdbcTemplate.update("delete from park_visitor where expiration_time < now()");
@@ -36,9 +47,10 @@ public class ParkService {
     }
 
     @Autowired
-    public ParkService(JdbcTemplate jdbcTemplate, DogService dogService) {
+    public ParkService(JdbcTemplate jdbcTemplate, DogService dogService, UserService userService) {
         this.jdbcTemplate = jdbcTemplate;
         this.dogService = dogService;
+        this.userService = userService;
     }
 
     public Map<String, List<SimpleDogInfo>> getAllParkVisitors(String park_id) {
@@ -91,5 +103,58 @@ public class ParkService {
                 rs.getString("dog_id"),
                 rs.getTimestamp("expiration_time")), username);
         return !list.isEmpty();
+    }
+
+    public void sendNotificationToParkVisitorFriends(String park_id, String username) {
+        List<String> friends = userService.getFriends(username);
+        List<String> tokens = new ArrayList<>();
+        for (String friend : friends) {
+            tokens.addAll(jdbcTemplate.query("SELECT push_token FROM user WHERE username = ?",
+                    (rs, rowNum) -> rs.getString("push_token"), friend));
+        }
+        tokens.forEach(token -> {
+            sendExpoNotification(token, "Friend visiting park.",
+                    "Your friend " + username + " is currently in the park " + park_id);
+        });
+    }
+
+    public void sendExpoNotification(String expoToken, String title, String message) {
+
+        if (!PushClient.isExponentPushToken(expoToken))
+            throw new Error("Token:" + expoToken + " is not a valid token.");
+
+        ExpoPushMessage expoPushMessage = new ExpoPushMessage();
+        expoPushMessage.getTo().add(expoToken);
+        expoPushMessage.setTitle(title);
+        expoPushMessage.setBody(message);
+
+        List<ExpoPushMessage> expoPushMessages = new ArrayList<>();
+        expoPushMessages.add(expoPushMessage);
+
+        PushClient client;
+        try {
+            client = new PushClient();
+        } catch (PushClientException e) {
+            throw new RuntimeException(e);
+        }
+        List<List<ExpoPushMessage>> chunks = client.chunkPushNotifications(expoPushMessages);
+
+        List<CompletableFuture<List<ExpoPushTicket>>> messageRepliesFutures = new ArrayList<>();
+
+        for (List<ExpoPushMessage> chunk : chunks) {
+            messageRepliesFutures.add(client.sendPushNotificationsAsync(chunk));
+        }
+
+        // Wait for each completable future to finish
+        List<ExpoPushTicket> allTickets = new ArrayList<>();
+        for (CompletableFuture<List<ExpoPushTicket>> messageReplyFuture : messageRepliesFutures) {
+            try {
+                for (ExpoPushTicket ticket : messageReplyFuture.get()) {
+                    allTickets.add(ticket);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

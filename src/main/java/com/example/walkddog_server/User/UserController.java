@@ -45,12 +45,15 @@ public class UserController {
     public List<Integer> registerUser(@RequestBody String userDetails) {
         //TODO add exception for existing username
         try {
+            System.out.println(userDetails);
             Map<String, Object> userMap = JsonParserFactory.getJsonParser().parseMap(userDetails);
             //TODO tell Amit to regex email
+            System.out.println(userMap);
             final User user = new User(userMap.get("username").toString(), userMap.get("password").toString(),
                     userMap.get("email").toString(), userMap.get("first_name").toString(),
                     userMap.get("last_name").toString(), userMap.get("push_token").toString());
-            userService.registerUser(user);
+            System.out.println(user);
+            System.out.println(userService.registerUser(user));
             List<Map<String, Object>> list = (ArrayList) userMap.get("dogs");
             return list.stream().map(dogMap -> new Dog(dogMap.get("name").toString(),
                             Integer.parseInt(dogMap.get("age").toString()),
