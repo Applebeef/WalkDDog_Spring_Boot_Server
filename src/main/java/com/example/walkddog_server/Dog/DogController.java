@@ -39,7 +39,7 @@ public class DogController {
         try {
             Map<String, Object> dogMap = JsonParserFactory.getJsonParser().parseMap(dogJson);
             Dog dog = new Dog(dogMap.get("name").toString(), Integer.parseInt(dogMap.get("age").toString()),
-                    dogMap.get("gender").toString(), dogMap.get("owner").toString());
+                    dogMap.get("gender").toString(), dogMap.get("owner").toString(), dogMap.get("breed").toString());
             return dogService.insertDog(dog);
         } catch (Exception e) {
             return 0;
